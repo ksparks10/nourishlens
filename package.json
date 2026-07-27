@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:hosting": "opennextjs-cloudflare build",
+    "build:hosting": "opennextjs-cloudflare build && wrangler deploy --dry-run --outdir dist && node scripts/finalize-cloudflare-build.mjs",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

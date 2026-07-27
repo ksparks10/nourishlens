@@ -10,6 +10,7 @@ const config = [
       ".next/**",
       ".open-next/**",
       ".wrangler/**",
+      "dist/**",
       "node_modules/**",
       "coverage/**",
       "next-env.d.ts",
