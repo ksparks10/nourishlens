@@ -6,6 +6,13 @@ const optionalValue = <T extends z.ZodTypeAny>(schema: T) =>
     schema.optional(),
   );
 
+const hostedPublicDefaults = {
+  appUrl: "https://example.com",
+  supabaseUrl: "https://ndtuxqymeydarotwfmfg.supabase.co",
+  supabaseAnonKey:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdHV4cXltZXlkYXJvdHdmbWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNzA0ODUsImV4cCI6MjEwMDc0NjQ4NX0.KD3rL5uN1uZ_aHJ1AA37eeiW8Rww1jytSKhRyG4ivCM",
+};
+
 export const env = createEnv({
   server: {
     SUPABASE_SERVICE_ROLE_KEY: optionalValue(z.string().min(20)),
@@ -26,9 +33,13 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
   },
   runtimeEnv: {
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_APP_URL:
+      process.env.NEXT_PUBLIC_APP_URL ?? hostedPublicDefaults.appUrl,
+    NEXT_PUBLIC_SUPABASE_URL:
+      process.env.NEXT_PUBLIC_SUPABASE_URL ?? hostedPublicDefaults.supabaseUrl,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY:
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+      hostedPublicDefaults.supabaseAnonKey,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     OWNER_BOOTSTRAP_SECRET: process.env.OWNER_BOOTSTRAP_SECRET,
     USDA_FDC_API_KEY: process.env.USDA_FDC_API_KEY,
