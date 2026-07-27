@@ -1,0 +1,16 @@
+node_modules
+.next
+coverage
+.env*
+!.env.example
+.DS_Store
+*.tsbuildinfo
+.supabase
+supabase/.branches
+supabase/.temp
+playwright-report
+test-results
+.dev-server.log
+.dev-server-error.log
+.next-dev-output.log
+.next-dev-error.log
