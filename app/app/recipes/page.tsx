@@ -14,9 +14,14 @@ export default async function Recipes() {
           <p className="eyebrow">REUSABLE FOOD</p>
           <h1>Recipes</h1>
         </div>
-        <Link className="button" href="/app/recipes/new">
-          New recipe
-        </Link>
+        <div className="heading-actions">
+          <Link className="button button-secondary" href="/app/recipes/import">
+            Import from Instagram
+          </Link>
+          <Link className="button" href="/app/recipes/new">
+            New recipe
+          </Link>
+        </div>
       </div>
       {data?.length ? (
         <div className="progress-list">

@@ -1506,6 +1506,70 @@ details summary {
   display: grid;
   gap: 5px;
 }
+.heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+.button-secondary {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+}
+.instagram-import-flow {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+.instagram-import-flow textarea {
+  resize: vertical;
+}
+.import-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--muted);
+}
+.import-progress span {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border: 3px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 999px;
+  animation: import-spin 0.85s linear infinite;
+}
+@keyframes import-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.import-review {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+.import-help {
+  margin-top: 1.25rem;
+}
+.import-help ol,
+.recipe-directions {
+  display: grid;
+  gap: 0.75rem;
+  padding-left: 1.35rem;
+}
+.source-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 9%, var(--card));
+}
+.source-banner span {
+  font-weight: 700;
+}
 .skip-link {
   position: fixed;
   left: 12px;
@@ -1670,6 +1734,17 @@ label,
   .form > button:last-child,
   .auth .button {
     width: 100%;
+  }
+  .heading-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .heading-actions .button {
+    flex: 1 1 12rem;
+  }
+  .source-banner {
+    align-items: flex-start;
+    flex-direction: column;
   }
   .entry {
     flex-direction: column;

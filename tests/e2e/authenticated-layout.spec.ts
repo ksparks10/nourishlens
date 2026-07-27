@@ -7,6 +7,7 @@ const appRoutes = [
   "/app/diary",
   "/app/recipes",
   "/app/recipes/new",
+  "/app/recipes/import",
   "/app/saved-meals",
   "/app/reports",
   "/app/projections",
@@ -104,4 +105,40 @@ test("authenticated and administrative layouts remain responsive", async ({
 
   for (const route of [...appRoutes, ...adminRoutes])
     await auditRenderedPage(page, route);
+});
+
+test("imports a shared Instagram caption into Recipes", async ({ page }) => {
+  test.setTimeout(90000);
+  await page.goto("/login");
+  await page.getByLabel("Email").first().fill("e2e@local.test");
+  await page.getByLabel("Password").fill("LocalTest123!");
+  await Promise.all([
+    page.waitForURL(/\/app/),
+    page.getByRole("button", { name: "Sign in" }).click(),
+  ]);
+
+  const query = new URLSearchParams({
+    url: "https://www.instagram.com/reel/TestRecipe123/",
+    text: `Creamy Tomato Pasta
+Serves 4
+Ingredients
+12 oz pasta
+2 cups tomato sauce
+1/2 cup parmesan
+Directions
+1. Boil the pasta.
+2. Stir in the sauce and cheese.`,
+  });
+  await page.goto(`/app/recipes/import?${query.toString()}`);
+  await expect(
+    page.getByRole("heading", { name: "Confirm the extracted recipe" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Save to Recipes" }).click();
+  await page.waitForURL(/\/app\/recipes\/[0-9a-f-]+/, { timeout: 20000 });
+  await expect(
+    page.getByRole("heading", { name: "Creamy Tomato Pasta" }),
+  ).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText("Imported from Instagram")).toBeVisible();
+  await expect(page.getByText("12 oz pasta")).toBeVisible();
+  await expect(page.getByText("Boil the pasta.")).toBeVisible();
 });
