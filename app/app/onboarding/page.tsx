@@ -24,36 +24,46 @@ export default async function Onboarding({
           <input name="birth_date" type="date" required />
         </label>
         <div className="form-grid">
+          <fieldset className="height-fields">
+            <legend>Height</legend>
+            <label>
+              Feet
+              <input
+                name="height_feet"
+                type="number"
+                min="2"
+                max="8"
+                step="1"
+                placeholder="6"
+                required
+              />
+            </label>
+            <label>
+              Inches
+              <input
+                name="height_inches"
+                type="number"
+                min="0"
+                max="11.9"
+                step="0.1"
+                placeholder="2"
+                required
+              />
+            </label>
+          </fieldset>
           <label>
-            Height in centimeters
+            Weight (lb)
             <input
-              name="height_cm"
+              name="weight_lb"
               type="number"
-              min="80"
-              max="260"
+              min="55"
+              max="1102"
               step="0.1"
-              required
-            />
-          </label>
-          <label>
-            Weight in kilograms
-            <input
-              name="weight_kg"
-              type="number"
-              min="25"
-              max="500"
-              step="0.1"
+              placeholder="200"
               required
             />
           </label>
         </div>
-        <label>
-          Measurement system
-          <select name="measurement_system">
-            <option value="metric">Metric</option>
-            <option value="us">US customary</option>
-          </select>
-        </label>
         <label>
           Biological sex used for applicable equations
           <select name="biological_sex">

@@ -18,15 +18,12 @@ const optionalNumber = (minimum: number, maximum: number) =>
   );
 const nutritionSchema = z.object({
   birth_date: z.string().date(),
-  height_value: optionalNumber(1, 1000),
   height_feet: optionalNumber(1, 9),
   height_inches: z.preprocess(
     (value) => (value == null || value === "" ? null : value),
     z.coerce.number().min(0).max(11.9).nullable(),
   ),
   weight_value: z.coerce.number().positive().max(1500),
-  displayed_measurement_system: z.enum(["metric", "us"]),
-  measurement_system: z.enum(["metric", "us"]),
   biological_sex: z.enum(["female", "male", "unspecified"]),
   activity_level: z.enum([
     "sedentary",
@@ -75,22 +72,17 @@ export async function updateNutritionProfile(data: FormData) {
   const { supabase, user } = await requireUser();
   const input = parsed.data;
   const heightCm =
-    input.displayed_measurement_system === "us"
-      ? input.height_feet === null || input.height_inches === null
-        ? null
-        : feetInchesToCentimeters(input.height_feet, input.height_inches)
-      : input.height_value;
+    input.height_feet === null || input.height_inches === null
+      ? null
+      : feetInchesToCentimeters(input.height_feet, input.height_inches);
   if (heightCm === null)
     redirect("/app/profile?error=Enter+your+complete+height#nutrition-profile");
   const values = {
     user_id: user.id,
     birth_date: input.birth_date,
     height_cm: heightCm,
-    weight_kg:
-      input.displayed_measurement_system === "us"
-        ? poundsToKilograms(input.weight_value)
-        : input.weight_value,
-    measurement_system: input.measurement_system,
+    weight_kg: poundsToKilograms(input.weight_value),
+    measurement_system: "us",
     biological_sex: input.biological_sex,
     activity_level: input.activity_level,
     primary_goal: input.primary_goal,
@@ -98,9 +90,7 @@ export async function updateNutritionProfile(data: FormData) {
     target_weight_kg:
       input.target_weight_value === null
         ? null
-        : input.displayed_measurement_system === "us"
-          ? poundsToKilograms(input.target_weight_value)
-          : input.target_weight_value,
+        : poundsToKilograms(input.target_weight_value),
     custom_calorie_target: input.custom_calorie_target,
     custom_protein_target: input.custom_protein_target,
     pregnancy_status: "not_applicable",

@@ -8,8 +8,9 @@ test("authenticated nutrition journey", async ({ page }) => {
   if (await page.getByRole("link", { name: "Start onboarding" }).isVisible()) {
     await page.getByRole("link", { name: "Start onboarding" }).click();
     await page.getByLabel("Date of birth").fill("1990-01-01");
-    await page.getByLabel("Height in centimeters").fill("175");
-    await page.getByLabel("Weight in kilograms").fill("75");
+    await page.getByLabel("Feet").fill("5");
+    await page.getByLabel("Inches").fill("9");
+    await page.getByLabel("Weight (lb)").fill("165");
     await page.getByRole("button", { name: /Save and calculate/ }).click();
   }
   await page.goto("/app/add-food");

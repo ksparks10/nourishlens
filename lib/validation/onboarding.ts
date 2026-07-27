@@ -1,9 +1,9 @@
 import { z } from "zod";
 export const onboardingSchema = z.object({
   birth_date: z.string().date(),
-  height_cm: z.coerce.number().min(80).max(260),
-  weight_kg: z.coerce.number().min(25).max(500),
-  measurement_system: z.enum(["metric", "us"]),
+  height_feet: z.coerce.number().int().min(2).max(8),
+  height_inches: z.coerce.number().min(0).max(11.9),
+  weight_lb: z.coerce.number().min(55).max(1102),
   biological_sex: z.enum(["female", "male", "unspecified"]),
   activity_level: z.enum([
     "sedentary",

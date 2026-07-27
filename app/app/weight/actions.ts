@@ -12,17 +12,13 @@ export async function saveWeight(data: FormData) {
     .object({
       logged_date: z.string().date(),
       weight_value: z.coerce.number().positive().max(1500),
-      measurement_system: z.enum(["metric", "us"]),
       notes: z.string().trim().max(500),
     })
     .safeParse(Object.fromEntries(data));
   if (!parsed.success)
     redirect("/app/profile?error=Invalid+weight+entry#measurements");
   const { supabase, user } = await requireUser();
-  const weightKg =
-    parsed.data.measurement_system === "us"
-      ? poundsToKilograms(parsed.data.weight_value)
-      : parsed.data.weight_value;
+  const weightKg = poundsToKilograms(parsed.data.weight_value);
   if (weightKg < 25 || weightKg > 500)
     redirect("/app/profile?error=Invalid+weight+entry#measurements");
   const { error } = await supabase.from("weight_logs").upsert(

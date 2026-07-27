@@ -60,10 +60,9 @@ export default async function Profile({
   const maxWeight = orderedWeights.length
     ? Math.max(...orderedWeights.map((row) => Number(row.weight_kg)))
     : 0;
-  const usesUs = nutrition?.measurement_system === "us";
   const displayWeight = (kilograms: number) =>
-    usesUs ? kilogramsToPounds(kilograms) : Number(kilograms);
-  const weightUnit = usesUs ? "lb" : "kg";
+    kilogramsToPounds(kilograms);
+  const weightUnit = "lb";
   const usHeight = nutrition
     ? centimetersToFeetInches(Number(nutrition.height_cm))
     : null;
@@ -116,11 +115,6 @@ export default async function Profile({
         </div>
         {nutrition ? (
           <form className="form" action={updateNutritionProfile}>
-            <input
-              type="hidden"
-              name="displayed_measurement_system"
-              value={nutrition.measurement_system}
-            />
             <div className="form-grid">
               <label>
                 Date of birth
@@ -131,55 +125,40 @@ export default async function Profile({
                   required
                 />
               </label>
-              {usesUs ? (
-                <fieldset className="height-fields">
-                  <legend>Height</legend>
-                  <label>
-                    Feet
-                    <input
-                      name="height_feet"
-                      type="number"
-                      min="1"
-                      max="9"
-                      step="1"
-                      defaultValue={usHeight?.feet}
-                      required
-                    />
-                  </label>
-                  <label>
-                    Inches
-                    <input
-                      name="height_inches"
-                      type="number"
-                      min="0"
-                      max="11.9"
-                      step="0.1"
-                      defaultValue={usHeight?.inches}
-                      required
-                    />
-                  </label>
-                </fieldset>
-              ) : (
+              <fieldset className="height-fields">
+                <legend>Height</legend>
                 <label>
-                  Height (cm)
+                  Feet
                   <input
-                    name="height_value"
+                    name="height_feet"
                     type="number"
-                    min="80"
-                    max="260"
-                    step="0.1"
-                    defaultValue={nutrition.height_cm}
+                    min="1"
+                    max="9"
+                    step="1"
+                    defaultValue={usHeight?.feet}
                     required
                   />
                 </label>
-              )}
+                <label>
+                  Inches
+                  <input
+                    name="height_inches"
+                    type="number"
+                    min="0"
+                    max="11.9"
+                    step="0.1"
+                    defaultValue={usHeight?.inches}
+                    required
+                  />
+                </label>
+              </fieldset>
               <label>
                 Current weight ({weightUnit})
                 <input
                   name="weight_value"
                   type="number"
-                  min={usesUs ? 55 : 25}
-                  max={usesUs ? 1102 : 500}
+                  min="55"
+                  max="1102"
                   step="0.1"
                   defaultValue={displayWeight(Number(nutrition.weight_kg))}
                   required
@@ -190,8 +169,8 @@ export default async function Profile({
                 <input
                   name="target_weight_value"
                   type="number"
-                  min={usesUs ? 55 : 25}
-                  max={usesUs ? 1102 : 500}
+                  min="55"
+                  max="1102"
                   step="0.1"
                   defaultValue={
                     nutrition.target_weight_kg === null
@@ -199,16 +178,6 @@ export default async function Profile({
                       : displayWeight(Number(nutrition.target_weight_kg))
                   }
                 />
-              </label>
-              <label>
-                Measurement system
-                <select
-                  name="measurement_system"
-                  defaultValue={nutrition.measurement_system}
-                >
-                  <option value="metric">Metric</option>
-                  <option value="us">US customary</option>
-                </select>
               </label>
               <label>
                 Biological sex used for applicable references
@@ -302,11 +271,6 @@ export default async function Profile({
           <span>New entries update weight-based targets</span>
         </div>
         <form className="form-grid" action={saveWeight}>
-          <input
-            type="hidden"
-            name="measurement_system"
-            value={nutrition?.measurement_system ?? "metric"}
-          />
           <label>
             Date
             <input
@@ -320,8 +284,8 @@ export default async function Profile({
             <input
               name="weight_value"
               type="number"
-              min={usesUs ? 55 : 25}
-              max={usesUs ? 1102 : 500}
+              min="55"
+              max="1102"
               step=".1"
               defaultValue={
                 nutrition ? displayWeight(Number(nutrition.weight_kg)) : ""

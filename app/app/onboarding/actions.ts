@@ -7,12 +7,21 @@ import {
   calculateTargets,
   type CalculatedTarget,
 } from "@/lib/nutrition/targets";
+import {
+  feetInchesToCentimeters,
+  poundsToKilograms,
+} from "@/lib/measurements";
 export async function completeOnboarding(data: FormData) {
   const parsed = onboardingSchema.safeParse(Object.fromEntries(data));
   if (!parsed.success)
     redirect("/app/onboarding?error=Review+the+highlighted+profile+values");
   const { supabase, user } = await requireUser();
   const input = parsed.data;
+  const heightCm = feetInchesToCentimeters(
+    input.height_feet,
+    input.height_inches,
+  );
+  const weightKg = poundsToKilograms(input.weight_lb);
   const age = ageOnDate(input.birth_date);
   if (age < 13 || age > 120)
     redirect("/app/onboarding?error=Enter+a+valid+birth+date");
@@ -28,8 +37,8 @@ export async function completeOnboarding(data: FormData) {
   const targets = [
     ...calculateTargets({
       age,
-      heightCm: input.height_cm,
-      weightKg: input.weight_kg,
+      heightCm,
+      weightKg,
       biologicalSex: input.biological_sex,
       activityLevel: input.activity_level,
       goal: input.primary_goal,
@@ -42,7 +51,16 @@ export async function completeOnboarding(data: FormData) {
     .from("nutrition_profiles")
     .upsert({
       user_id: user.id,
-      ...input,
+      birth_date: input.birth_date,
+      height_cm: heightCm,
+      weight_kg: weightKg,
+      measurement_system: "us",
+      biological_sex: input.biological_sex,
+      activity_level: input.activity_level,
+      primary_goal: input.primary_goal,
+      dietary_pattern: input.dietary_pattern,
+      custom_calorie_target: input.custom_calorie_target,
+      custom_protein_target: input.custom_protein_target,
       pregnancy_status: "not_applicable",
       calculation_version: "targets-v2",
     });
