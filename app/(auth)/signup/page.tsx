@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthSubmitButton } from "@/components/auth-submit-button";
 import { signUp } from "../actions";
 export default async function Signup({
   searchParams,
@@ -18,10 +19,16 @@ export default async function Signup({
             {q.error}
           </p>
         )}
-        <form className="form" action={signUp}>
+        <form className="form" action={signUp} noValidate>
           <label>
             Email
-            <input name="email" type="email" autoComplete="email" required />
+            <input
+              name="email"
+              type="email"
+              autoComplete="email"
+              inputMode="email"
+              required
+            />
           </label>
           <label>
             Password
@@ -29,11 +36,17 @@ export default async function Signup({
               name="password"
               type="password"
               autoComplete="new-password"
-              minLength={8}
+              aria-describedby="password-requirements"
               required
             />
           </label>
-          <button className="button">Create account</button>
+          <p className="field-help" id="password-requirements">
+            Use 8–72 characters.
+          </p>
+          <AuthSubmitButton
+            idleLabel="Create account"
+            pendingLabel="Creating account…"
+          />
         </form>
         <p>
           Already registered? <Link href="/login">Sign in</Link>
