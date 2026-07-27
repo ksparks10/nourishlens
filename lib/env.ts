@@ -7,7 +7,7 @@ const optionalValue = <T extends z.ZodTypeAny>(schema: T) =>
   );
 
 const hostedPublicDefaults = {
-  appUrl: "https://example.com",
+  appUrl: "https://nourish-lens-ksparks.kevin358349.chatgpt.site",
   supabaseUrl: "https://ndtuxqymeydarotwfmfg.supabase.co",
   supabaseAnonKey:
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdHV4cXltZXlkYXJvdHdmbWZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNzA0ODUsImV4cCI6MjEwMDc0NjQ4NX0.KD3rL5uN1uZ_aHJ1AA37eeiW8Rww1jytSKhRyG4ivCM",

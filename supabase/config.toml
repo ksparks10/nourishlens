@@ -7,6 +7,19 @@ port = 54322
 major_version = 15
 [auth]
 enabled = true
-site_url = "http://localhost:3000"
-additional_redirect_urls = ["http://localhost:3000/auth/callback"]
+site_url = "https://nourish-lens-ksparks.kevin358349.chatgpt.site"
+additional_redirect_urls = [
+  "https://nourish-lens-ksparks.kevin358349.chatgpt.site/auth/callback",
+  "http://localhost:3000/auth/callback",
+]
 enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+max_frequency = "1m"
+otp_length = 8
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
