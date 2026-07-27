@@ -1,11 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 function envFile() {
-  const content = fs.readFileSync(
-    path.join(process.cwd(), ".env.local"),
-    "utf8",
-  );
-  return Object.fromEntries(
+  const envPath = path.join(process.cwd(), ".env.local");
+  const content = fs.existsSync(envPath) ? fs.readFileSync(envPath, "utf8") : "";
+  const fileValues = Object.fromEntries(
     content
       .split(/\r?\n/)
       .filter((line) => line && !line.startsWith("#"))
@@ -14,8 +12,18 @@ function envFile() {
         return [line.slice(0, index), line.slice(index + 1)];
       }),
   );
+  return {
+    ...fileValues,
+    NEXT_PUBLIC_SUPABASE_URL:
+      process.env.NEXT_PUBLIC_SUPABASE_URL ??
+      fileValues.NEXT_PUBLIC_SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY:
+      process.env.SUPABASE_SERVICE_ROLE_KEY ??
+      fileValues.SUPABASE_SERVICE_ROLE_KEY,
+  };
 }
 export default async function globalSetup() {
+  if (process.env.E2E_PUBLIC_ONLY === "1") return;
   const env = envFile();
   const base = env.NEXT_PUBLIC_SUPABASE_URL;
   const service = env.SUPABASE_SERVICE_ROLE_KEY;
@@ -49,4 +57,46 @@ export default async function globalSetup() {
   });
   if (!created.ok)
     throw new Error(`Unable to create E2E user: ${await created.text()}`);
+  const createdUser = (await created.json()) as { id: string };
+
+  if (process.env.E2E_ADMIN === "1") {
+    const restHeaders = {
+      ...headers,
+      Prefer: "return=minimal",
+    };
+    const permissions = (await fetch(
+      `${base}/rest/v1/permissions?select=id`,
+      { headers },
+    ).then((response) => response.json())) as { id: string }[];
+    const directPermissions = permissions.map((permission) => ({
+      user_id: createdUser.id,
+      permission_id: permission.id,
+      granted: true,
+    }));
+    const permissionResponse = await fetch(
+      `${base}/rest/v1/user_permissions`,
+      {
+        method: "POST",
+        headers: restHeaders,
+        body: JSON.stringify(directPermissions),
+      },
+    );
+    if (!permissionResponse.ok)
+      throw new Error(
+        `Unable to grant E2E permissions: ${await permissionResponse.text()}`,
+      );
+    const accessResponse = await fetch(`${base}/rest/v1/access_grants`, {
+      method: "POST",
+      headers: restHeaders,
+      body: JSON.stringify({
+        user_id: createdUser.id,
+        grant_type: "admin",
+        reason: "Temporary responsive layout audit",
+      }),
+    });
+    if (!accessResponse.ok)
+      throw new Error(
+        `Unable to grant E2E access: ${await accessResponse.text()}`,
+      );
+  }
 }
