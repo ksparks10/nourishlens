@@ -54,16 +54,15 @@ export function decodeHtml(value: string) {
 }
 
 export function captionFromInstagramHtml(html: string) {
-  const matches = [
-    ...html.matchAll(
-      /<meta[^>]+(?:property|name)=["'](?:og:description|description)["'][^>]+content=["']([\s\S]*?)["'][^>]*>/gi,
-    ),
-    ...html.matchAll(
-      /<meta[^>]+content=["']([\s\S]*?)["'][^>]+(?:property|name)=["'](?:og:description|description)["'][^>]*>/gi,
-    ),
-  ];
-  for (const match of matches) {
-    let value = decodeHtml(match[1] ?? "")
+  const tags = html.match(/<meta\b[^>]{0,4096}>/gi) ?? [];
+  for (const tag of tags) {
+    const key = tag.match(
+      /(?:property|name)=["'](og:description|description)["']/i,
+    )?.[1];
+    if (!key) continue;
+    const content = tag.match(/content=(["'])(.*?)\1/i)?.[2];
+    if (!content) continue;
+    let value = decodeHtml(content)
       .replace(/\\n/g, "\n")
       .trim();
     const quotedCaption = value.match(

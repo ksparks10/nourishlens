@@ -34,11 +34,15 @@ export function InstagramRecipeImporter({
     setLoading(true);
     setError("");
     setRecipe(null);
+    let timeout: number | undefined;
     try {
+      const controller = new AbortController();
+      timeout = window.setTimeout(() => controller.abort(), 12000);
       const response = await fetch("/api/recipes/import/instagram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url, caption }),
+        signal: controller.signal,
       });
       const result = (await response.json()) as ImportResponse;
       if (!response.ok || !result.recipe) {
@@ -52,8 +56,12 @@ export function InstagramRecipeImporter({
       setUrl(result.sourceUrl ?? url);
       setShowCaption(false);
     } catch {
-      setError("The recipe importer could not connect. Please try again.");
+      setError(
+        "Instagram did not provide the caption in time. Paste the post caption below to finish the import.",
+      );
+      setShowCaption(true);
     } finally {
+      if (timeout) window.clearTimeout(timeout);
       setLoading(false);
     }
   }, [caption, loading, url]);

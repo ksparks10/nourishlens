@@ -11,7 +11,7 @@ const inputSchema = z.object({
   caption: z.string().trim().max(20000).optional().default(""),
 });
 
-async function readLimitedText(response: Response, maximum = 2_000_000) {
+async function readPageHeader(response: Response, maximum = 300_000) {
   const reader = response.body?.getReader();
   if (!reader) return "";
   const decoder = new TextDecoder();
@@ -21,10 +21,13 @@ async function readLimitedText(response: Response, maximum = 2_000_000) {
     const { done, value } = await reader.read();
     if (done) break;
     size += value.byteLength;
-    if (size > maximum) throw new Error("Instagram response was too large");
     result += decoder.decode(value, { stream: true });
+    if (result.includes("</head>") || size >= maximum) {
+      await reader.cancel();
+      break;
+    }
   }
-  return result + decoder.decode();
+  return result.slice(0, maximum) + decoder.decode();
 }
 
 async function fetchPublicCaption(url: string) {
@@ -37,11 +40,11 @@ async function fetchPublicCaption(url: string) {
         "Mozilla/5.0 (compatible; NourishLensRecipeImporter/1.0; +https://nourish-lens-ksparks.kevin358349.chatgpt.site)",
     },
     redirect: "follow",
-    signal: AbortSignal.timeout(12000),
+    signal: AbortSignal.timeout(7000),
   });
   if (!response.ok || !normalizeInstagramUrl(response.url))
     throw new Error("Instagram did not return a public post");
-  return captionFromInstagramHtml(await readLimitedText(response));
+  return captionFromInstagramHtml(await readPageHeader(response));
 }
 
 export async function POST(request: Request) {
